@@ -187,17 +187,7 @@ static void worker(
 
                 nlohmann::json job;
 
-                job["nixName"] = drv->queryName();
-                job["system"] =drv->querySystem();
                 job["drvPath"] = drvPath;
-                job["description"] = drv->queryMetaString("description");
-                job["license"] = queryMetaStrings(state, *drv, "license", "shortName");
-                job["homepage"] = drv->queryMetaString("homepage");
-                job["maintainers"] = queryMetaStrings(state, *drv, "maintainers", "email");
-                job["schedulingPriority"] = drv->queryMetaInt("schedulingPriority", 100);
-                job["timeout"] = drv->queryMetaInt("timeout", 36000);
-                job["maxSilent"] = drv->queryMetaInt("maxSilent", 7200);
-                job["isChannel"] = drv->queryMetaBool("isHydraChannel", false);
 
                 /* Register the derivation as a GC root.  !!! This
                    registers roots for jobs that we may have already
@@ -208,11 +198,6 @@ static void worker(
                     if (!pathExists(root))
                         localStore->addPermRoot(localStore->parseStorePath(drvPath), root);
                 }
-
-                nlohmann::json out;
-                for (auto & j : outputs)
-                    out[j.first] = j.second;
-                job["outputs"] = std::move(out);
 
                 reply["job"] = std::move(job);
             }
